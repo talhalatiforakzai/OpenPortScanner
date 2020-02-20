@@ -14,54 +14,53 @@ import mysql.connector
 app = Flask(__name__)
 
 
-# @app.route('/scan_ports', methods=['GET'])
-# def scan_ports():
+@app.route('/OPS', methods=['GET'])
+def open_port_scanner():
+    """ Discover ip address and open ports of active devices on a network
 
-@app.route('/discover_devices', methods=['GET'])
-def discover_host():
-    """ Discover devices on a network
-
-    This function accepts ip and forms a command line string which is passed to shlex
-    that parses the string into shell-like syntax, the flag -sn tells Nmap not to do a
-    port scan after host discovery, and only print out the available hosts that responded
-    to the host discovery probes.
-
-
-    Parameters
-    ----------
-        ip : string
-            ip address of the network to be scanned for host discovery
-
-    Returns
-    -------
-        json
-            a jason array containing the information of devices on the network
+    :return ports: (dict) object containing ip address and open ports on the network
 
     """
-
-    # db = mysql.connector.connect(host="localhost", user="root", passwd="root", database="ops")
-    # cursor = db.cursor(dictionary=True)
 
     ip_address = request.get_json('ip')
     ip_address = ip_address["ip"]
     script_executor(ip=ip_address, usage="Discover Devices")
     devices = parser("Discover Devices")
-    #return json.dumps(devices)
+    dbConnection(devices)
 
-    # find ports we pass a list in the arguments
+    # Iterating over active devices and finding open ports
     script_executor(usage="Find Ports")
     ports = parser("Find Ports")
     return json.dumps(ports)
 
-    # Save ip address and mac address in database
-    # st = "INSERT INTO devices VALUES ('%s')"
-    # cursor.executemany(st, devices_found)
-    # db.commit()
-    # db.close()
-    # return json.dumps(devices)
+
+def dbConnection(devices):
+    """ Save ip address in mysql database
+
+        :param devices: (list) object containing the active addresses found on the network
+
+        """
+    try:
+        db = mysql.connector.connect(host="localhost", user="root", passwd="root", database="ops")
+        cursor = db.cursor()
+        devices = [(x,) for x in devices]
+        st = """INSERT INTO devices VALUES (%s)"""
+        cursor.executemany(st, devices)
+        db.commit()
+        db.close()
+    except Exception as error:
+        return error
 
 
 def parser(usage):
+    """ Parses the xml output into dictionary and then saves the ip address into a txt file that will be
+        used to find open ports
+
+        :param usage: (string) object that tells the function to either Discover new device or find open ports
+        :return device: (list) object containing the ip address of the active devices on network
+        :return ports: (dict) array of dictionary objects containing information about open ports and devices
+
+    """
     if usage == "Discover Devices":
         with open('device.xml') as raw_xml:
             nmap_scan = xmltodict.parse(raw_xml.read())
@@ -69,27 +68,37 @@ def parser(usage):
         total_host = len(nmap_scan["nmaprun"]["host"])
         for i in range(total_host - 1):
             devices.append(nmap_scan["nmaprun"]["host"][i]["address"][0]["@addr"])
+
+        # Local host is located outside the list so it needs to be parsed outside the loop
         devices.append(nmap_scan["nmaprun"]["host"][total_host - 1]["address"]["@addr"])
-        # Turn the list into dictionary for std json output
-        # devices_found = [{'ip': k, 'mac': v} for k, v in [devices[i: i + 2] for i in range(0, len(devices), 2)]]
-        devices_found = [{'ip': k} for k in iter(devices)]
+
+        # Active devices ip address saved in a txt file later to be used to find open ports and save ip address in DB
         file = open("iplist.txt", "w")
         for element in devices:
             file.write(element)
             file.write('\n')
         file.close()
-        return devices_found
+        return devices
     elif usage == "Find Ports":
         with open('port.xml') as raw_xml:
             nmap_scan = xmltodict.parse(raw_xml.read())
-            return nmap_scan
+            ports = nmap_scan["nmaprun"]["host"]
+            return ports
 
 
 def script_executor(**kwargs):
+    """ Executes the NMAP commands in subprocess and use shlex to parses the string into shell-like syntax that is
+        required by popenargs.
+
+           :param usage: (string) object that tells the function to either Discover new device or find open ports
+           :return ip: (string) ip address of the network
+           :return none:
+
+       """
     if kwargs['usage'] == "Discover Devices":
         cmd = "nmap -sn --open -oX device.xml " + kwargs['ip']
     elif kwargs['usage'] == "Find Ports":
-        cmd = "nmap -iL iplist.txt -sUV -sT -T4 -F --version-intensity 0 --open -oX udp.xml"
+        cmd = "nmap -iL iplist.txt -sUV -sT -T4 -F --version-intensity 0 --open -oX port.xml"
     args = shlex.split(cmd)
     run(args)
 

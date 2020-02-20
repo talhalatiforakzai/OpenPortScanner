@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///C:/Program Files (x86)/Nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.80 scan initiated Thu Feb 20 10:20:02 2020 as: nmap -iL iplist.txt -sUV -sT -T4 -F -&#45;version-intensity 0 -&#45;open -oX port.xml -->
+<nmaprun scanner="nmap" args="nmap -iL iplist.txt -sUV -sT -T4 -F -&#45;version-intensity 0 -&#45;open -oX port.xml" start="1582222802" startstr="Thu Feb 20 10:20:02 2020" version="7.80" xmloutputversion="1.04">
+<scaninfo type="connect" protocol="tcp" numservices="100" services="7,9,13,21-23,25-26,37,53,79-81,88,106,110-111,113,119,135,139,143-144,179,199,389,427,443-445,465,513-515,543-544,548,554,587,631,646,873,990,993,995,1025-1029,1110,1433,1720,1723,1755,1900,2000-2001,2049,2121,2717,3000,3128,3306,3389,3986,4899,5000,5009,5051,5060,5101,5190,5357,5432,5631,5666,5800,5900,6000-6001,6646,7070,8000,8008-8009,8080-8081,8443,8888,9100,9999-10000,32768,49152-49157"/>
+<scaninfo type="udp" protocol="udp" numservices="100" services="7,9,17,19,49,53,67-69,80,88,111,120,123,135-139,158,161-162,177,427,443,445,497,500,514-515,518,520,593,623,626,631,996-999,1022-1023,1025-1030,1433-1434,1645-1646,1701,1718-1719,1812-1813,1900,2000,2048-2049,2222-2223,3283,3456,3703,4444,4500,5000,5060,5353,5632,9200,10000,17185,20031,30718,31337,32768-32769,32771,32815,33281,49152-49154,49156,49181-49182,49185-49186,49188,49190-49194,49200-49201,65024"/>
+<verbose level="0"/>
+<debugging level="0"/>
+<host starttime="1582222805" endtime="1582222951"><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="192.168.100.1" addrtype="ipv4"/>
+<address addr="34:0A:98:3B:52:B1" addrtype="mac" vendor="Huawei Technologies"/>
+<hostnames>
+</hostnames>
+<ports><extraports state="filtered" count="98">
+<extrareasons reason="no-responses" count="98"/>
+</extraports>
+<extraports state="closed" count="88">
+<extrareasons reason="port-unreaches" count="88"/>
+</extraports>
+<port protocol="tcp" portid="53"><state state="open" reason="syn-ack" reason_ttl="0"/><service name="domain" extrainfo="unknown banner: BIND" method="probed" conf="10"/></port>
+<port protocol="tcp" portid="80"><state state="open" reason="syn-ack" reason_ttl="0"/><service name="http" servicefp="SF-Port80-TCP:V=7.80%I=0%D=2/20%Time=5E4ECE5D%P=i686-pc-windows-windows%r(GetRequest,39,&quot;HTTP/1\.1\x20400\x20Bad\x20Request\r\nConnection:\x20Keep-Alive\r\n\r\n0\r\n\r\n&quot;)%r(HTTPOptions,F8,&quot;HTTP/1\.1\x20404\x20Not\x20Found\r\nContent-Type:text/html\r\nPragma:no-cache\r\nCache-control:no-cache,\x20no-store,\x20max-age=0\r\nTransfer-Encoding:chunked\r\nX-Frame-Options:SAMEORIGIN\r\nConnection:Keep-Alive\r\n\r\n2f\r\nThe\x20requested\x20URL\x20was\x20not\x20found\x20on\x20this\x20server\.\r\n0\r\n\r\n&quot;)%r(RTSPRequest,F8,&quot;HTTP/1\.1\x20404\x20Not\x20Found\r\nContent-Type:text/html\r\nPragma:no-cache\r\nCache-control:no-cache,\x20no-store,\x20max-age=0\r\nTransfer-Encoding:chunked\r\nX-Frame-Options:SAMEORIGIN\r\nConnection:Keep-Alive\r\n\r\n2f\r\nThe\x20requested\x20URL\x20was\x20not\x20found\x20on\x20this\x20server\.\r\n0\r\n\r\n&quot;)%r(FourOhFourRequest,39,&quot;HTTP/1\.1\x20400\x20Bad\x20Request\r\nConnection:\x20Keep-Alive\r\n\r\n0\r\n\r\n&quot;);" method="table" conf="3"/></port>
+<port protocol="udp" portid="49"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="tcpwrapped" method="probed" conf="8"/></port>
+<port protocol="udp" portid="53"><state state="open" reason="udp-response" reason_ttl="64"/><service name="domain" extrainfo="unknown banner: BIND" method="probed" conf="10"/></port>
+<port protocol="udp" portid="67"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="tcpwrapped" method="probed" conf="8"/></port>
+<port protocol="udp" portid="137"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="netbios-ns" method="table" conf="3"/></port>
+<port protocol="udp" portid="497"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="tcpwrapped" method="probed" conf="8"/></port>
+<port protocol="udp" portid="500"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="isakmp" method="table" conf="3"/></port>
+<port protocol="udp" portid="1900"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="tcpwrapped" method="probed" conf="8"/></port>
+<port protocol="udp" portid="2049"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="tcpwrapped" method="probed" conf="8"/></port>
+<port protocol="udp" portid="2222"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="tcpwrapped" method="probed" conf="8"/></port>
+<port protocol="udp" portid="3456"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="tcpwrapped" method="probed" conf="8"/></port>
+<port protocol="udp" portid="5060"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="sip" method="table" conf="3"/></port>
+<port protocol="udp" portid="33281"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="tcpwrapped" method="probed" conf="8"/></port>
+</ports>
+<times srtt="2521" rttvar="2801" to="100000"/>
+</host>
+<host starttime="1582222805" endtime="1582222951"><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="192.168.100.4" addrtype="ipv4"/>
+<address addr="88:AE:07:CA:C9:FB" addrtype="mac" vendor="Apple"/>
+<hostnames>
+</hostnames>
+<ports><extraports state="filtered" count="100">
+<extrareasons reason="no-responses" count="100"/>
+</extraports>
+<extraports state="closed" count="99">
+<extrareasons reason="port-unreaches" count="99"/>
+</extraports>
+<port protocol="udp" portid="5353"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="zeroconf" method="table" conf="3"/></port>
+</ports>
+<times srtt="41370" rttvar="24635" to="139910"/>
+</host>
+<host starttime="1582222805" endtime="1582222951"><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="192.168.100.5" addrtype="ipv4"/>
+<address addr="80:7A:BF:02:01:43" addrtype="mac" vendor="HTC"/>
+<hostnames>
+</hostnames>
+<ports><extraports state="filtered" count="100">
+<extrareasons reason="no-responses" count="100"/>
+</extraports>
+<extraports state="closed" count="94">
+<extrareasons reason="port-unreaches" count="94"/>
+</extraports>
+<port protocol="udp" portid="49"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="tcpwrapped" method="probed" conf="8"/></port>
+<port protocol="udp" portid="68"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="tcpwrapped" method="probed" conf="8"/></port>
+<port protocol="udp" portid="1023"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="tcpwrapped" method="probed" conf="8"/></port>
+<port protocol="udp" portid="2048"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="tcpwrapped" method="probed" conf="8"/></port>
+<port protocol="udp" portid="5353"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="zeroconf" method="table" conf="3"/></port>
+<port protocol="udp" portid="49190"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="tcpwrapped" method="probed" conf="8"/></port>
+</ports>
+<times srtt="27665" rttvar="32215" to="156525"/>
+</host>
+<host starttime="1582222805" endtime="1582222951"><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="192.168.100.6" addrtype="ipv4"/>
+<address addr="C8:FF:28:E5:A8:01" addrtype="mac" vendor="Liteon Technology"/>
+<hostnames>
+</hostnames>
+<ports><extraports state="filtered" count="100">
+<extrareasons reason="no-responses" count="100"/>
+</extraports>
+<extraports state="open|filtered" count="100">
+<extrareasons reason="no-responses" count="100"/>
+</extraports>
+</ports>
+<times srtt="66000" rttvar="66000" to="330000"/>
+</host>
+<host starttime="1582222805" endtime="1582222951"><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="192.168.100.16" addrtype="ipv4"/>
+<address addr="4C:0F:6E:E3:17:07" addrtype="mac" vendor="Hon Hai Precision Ind."/>
+<hostnames>
+</hostnames>
+<ports><extraports state="filtered" count="100">
+<extrareasons reason="no-responses" count="100"/>
+</extraports>
+<extraports state="closed" count="94">
+<extrareasons reason="port-unreaches" count="94"/>
+</extraports>
+<port protocol="udp" portid="1025"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="tcpwrapped" method="probed" conf="8"/></port>
+<port protocol="udp" portid="4444"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="tcpwrapped" method="probed" conf="8"/></port>
+<port protocol="udp" portid="9200"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="tcpwrapped" method="probed" conf="8"/></port>
+<port protocol="udp" portid="33281"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="tcpwrapped" method="probed" conf="8"/></port>
+<port protocol="udp" portid="49191"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="tcpwrapped" method="probed" conf="8"/></port>
+<port protocol="udp" portid="49201"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="tcpwrapped" method="probed" conf="8"/></port>
+</ports>
+<times srtt="6018" rttvar="7041" to="100000"/>
+</host>
+<host starttime="1582222951" endtime="1582222982"><status state="up" reason="localhost-response" reason_ttl="0"/>
+<address addr="192.168.100.3" addrtype="ipv4"/>
+<hostnames>
+</hostnames>
+<ports><extraports state="open|filtered" count="100">
+<extrareasons reason="no-responses" count="100"/>
+</extraports>
+<extraports state="filtered" count="96">
+<extrareasons reason="no-responses" count="96"/>
+</extraports>
+<port protocol="tcp" portid="135"><state state="open" reason="syn-ack" reason_ttl="0"/><service name="msrpc" product="Microsoft Windows RPC" ostype="Windows" method="probed" conf="10"><cpe>cpe:/o:microsoft:windows</cpe></service></port>
+<port protocol="tcp" portid="139"><state state="open" reason="syn-ack" reason_ttl="0"/><service name="netbios-ssn" product="Microsoft Windows netbios-ssn" ostype="Windows" method="probed" conf="10"><cpe>cpe:/o:microsoft:windows</cpe></service></port>
+<port protocol="tcp" portid="445"><state state="open" reason="syn-ack" reason_ttl="0"/><service name="microsoft-ds" method="table" conf="3"/></port>
+<port protocol="tcp" portid="3306"><state state="open" reason="syn-ack" reason_ttl="0"/><service name="mysql" servicefp="SF-Port3306-TCP:V=7.80%I=0%D=2/20%Time=5E4ECE7D%P=i686-pc-windows-windows%r(NULL,4E,&quot;J\0\0\0\n8\.0\.19\0F\0\0\0\x01x=\?\?PU`\0\xff\xff\xff\x02\0\xff\xc7\x15\0\0\0\0\0\0\0\0\0\0D%7\x178\x082lyKjy\0caching_sha2_password\0&quot;);" method="table" conf="3"/></port>
+</ports>
+<times srtt="155" rttvar="1473" to="100000"/>
+</host>
+<runstats><finished time="1582222982" timestr="Thu Feb 20 10:23:02 2020" elapsed="180.00" summary="Nmap done at Thu Feb 20 10:23:02 2020; 6 IP addresses (6 hosts up) scanned in 180.00 seconds" exit="success"/><hosts up="6" down="0" total="6"/>
+</runstats>
+</nmaprun>
