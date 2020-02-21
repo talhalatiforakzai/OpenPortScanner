@@ -1,0 +1,6 @@
+CREATE DATABASE OPS;
+use OPS;
+
+CREATE TABLE devices (
+  ip VARCHAR(15)
+);

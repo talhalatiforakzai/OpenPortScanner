@@ -41,7 +41,7 @@ def dbConnection(devices):
 
         """
     try:
-        db = mysql.connector.connect(host="localhost", user="root", passwd="root", database="ops")
+        db = mysql.connector.connect(host="localhost", user="root", port="3306", passwd="root", database="OPS")
         cursor = db.cursor()
         devices = [(x,) for x in devices]
         st = """INSERT INTO devices VALUES (%s)"""
@@ -61,16 +61,22 @@ def parser(usage):
         :return ports: (dict) array of dictionary objects containing information about open ports and devices
 
     """
+
     if usage == "Discover Devices":
         with open('device.xml') as raw_xml:
             nmap_scan = xmltodict.parse(raw_xml.read())
         devices = []
         total_host = len(nmap_scan["nmaprun"]["host"])
-        for i in range(total_host - 1):
-            devices.append(nmap_scan["nmaprun"]["host"][i]["address"][0]["@addr"])
 
-        # Local host is located outside the list so it needs to be parsed outside the loop
-        devices.append(nmap_scan["nmaprun"]["host"][total_host - 1]["address"]["@addr"])
+        # this block parses the ip according to the object returned
+        if nmap_scan["nmaprun"]["host"][0]["address"]["@addr"]:
+            for i in range(total_host):
+                devices.append(nmap_scan["nmaprun"]["host"][i]["address"]["@addr"])
+        elif nmap_scan["nmaprun"]["host"][0]["address"][0]["@addr"]:
+            for i in range(total_host-1):
+                devices.append(nmap_scan["nmaprun"]["host"][i]["address"][0]["@addr"])
+            # Local host is located outside the list so it needs to be parsed outside the loop
+            devices.append(nmap_scan["nmaprun"]["host"][total_host - 1]["address"]["@addr"])
 
         # Active devices ip address saved in a txt file later to be used to find open ports and save ip address in DB
         file = open("iplist.txt", "w")
@@ -104,4 +110,4 @@ def script_executor(**kwargs):
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0')
