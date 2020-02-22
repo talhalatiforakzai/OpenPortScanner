@@ -10,12 +10,63 @@ import xmltodict, shlex, json
 from subprocess import run
 from flask import Flask, request
 import mysql.connector
+from apscheduler.schedulers.background import BackgroundScheduler
+
+
+def worker(network):
+    """ This function executes every 5 min to check for new devices and ports on network, it receives an
+        ip address it then trie to fetch old devices from database if found compares it to new device
+        and using set theory gets the list of newly discovered devices for which ports are scanned else
+        it searches for devices on network considers it new devices
+
+    """
+    cursor = dbConnection()
+    try:
+        st = """SELECT * FROM devices"""
+        cursor.execute(st)
+        oldDevices = [item[0] for item in cursor.fetchall()]
+    except Exception as error:
+        return error
+    else:
+        if oldDevices:
+            script_executor(ip=network, usage="Discover Devices")
+            newDevices = parser("Discover Devices")
+            newDevices = list(({*newDevices} - {*oldDevices}))
+            script_executor(usage="Find Ports")
+            ports = parser("Find Ports")
+            print(json.dumps(ports))
+        else:
+            script_executor(ip=network, usage="Discover Devices")
+            newDevices = parser("Discover Devices")
+            newDevices = [(x,) for x in newDevices]
+            st = """INSERT INTO devices VALUES (%s)"""
+            cursor.executemany(st, newDevices)
+            script_executor(usage="Find Ports")
+            ports = parser("Find Ports")
+            print(json.dumps(ports))
+
 
 app = Flask(__name__)
 
 
+@app.route('/cronjob', methods=['GET'])
+def cron_job():
+    """ This function calls a worker function every 5 min and checks for new devices and ports
+
+        :return: (string) acknowledgement for successful execution
+
+    """
+    ip_address = request.get_json('ip')
+    ip_address = ip_address["ip"]
+    script_executor(ip=ip_address, usage="Discover Devices")
+    sched = BackgroundScheduler(daemon=True)
+    sched.add_job(worker, 'interval', args=[ip_address], minutes=1)
+    sched.start()
+    return "cron job running"
+
+
 @app.route('/OPS', methods=['GET'])
-def open_port_scanner():
+def open_port_scanner(**kwargs):
     """ Discover ip address and open ports of active devices on a network
 
     :return ports: (dict) object containing ip address and open ports on the network
@@ -26,7 +77,11 @@ def open_port_scanner():
     ip_address = ip_address["ip"]
     script_executor(ip=ip_address, usage="Discover Devices")
     devices = parser("Discover Devices")
-    dbConnection(devices)
+
+    cursor = dbConnection()
+    devices = [(x,) for x in devices]
+    st = """INSERT INTO devices VALUES (%s)"""
+    cursor.executemany(st, devices)
 
     # Iterating over active devices and finding open ports
     script_executor(usage="Find Ports")
@@ -34,20 +89,12 @@ def open_port_scanner():
     return json.dumps(ports)
 
 
-def dbConnection(devices):
-    """ Save ip address in mysql database
-
-        :param devices: (list) object containing the active addresses found on the network
-
-        """
+def dbConnection():
+    """ Configration for mysql database """
     try:
         db = mysql.connector.connect(host="localhost", user="root", port="3306", passwd="root", database="OPS")
         cursor = db.cursor()
-        devices = [(x,) for x in devices]
-        st = """INSERT INTO devices VALUES (%s)"""
-        cursor.executemany(st, devices)
-        db.commit()
-        db.close()
+        return cursor
     except Exception as error:
         return error
 
@@ -73,7 +120,7 @@ def parser(usage):
             for i in range(total_host):
                 devices.append(nmap_scan["nmaprun"]["host"][i]["address"]["@addr"])
         elif nmap_scan["nmaprun"]["host"][0]["address"][0]["@addr"]:
-            for i in range(total_host-1):
+            for i in range(total_host - 1):
                 devices.append(nmap_scan["nmaprun"]["host"][i]["address"][0]["@addr"])
             # Local host is located outside the list so it needs to be parsed outside the loop
             devices.append(nmap_scan["nmaprun"]["host"][total_host - 1]["address"]["@addr"])
