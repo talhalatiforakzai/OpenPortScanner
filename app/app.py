@@ -12,19 +12,41 @@ from flask import Flask, request
 import mysql.connector
 from apscheduler.schedulers.background import BackgroundScheduler
 
+app = Flask(__name__)
+
+
+@app.route('/cronjob', methods=['GET'])
+def cron_job():
+    """ This function calls a worker function every 5 min and checks for new devices and ports
+
+        :return: (string) acknowledgement for successful execution
+
+    """
+    ip_address = request.get_json('ip')
+    ip_address = ip_address["ip"]
+    # script_executor(ip=ip_address, usage="Discover Devices")
+    sched = BackgroundScheduler(daemon=True)
+    sched.add_job(worker, 'interval', args=[ip_address], minutes=5)
+    sched.start()
+    return "cron job running"
+
 
 def worker(network):
-    """ This function executes every 5 min to check for new devices and ports on network, it receives an
+    """ This function executes every 10 min to check for new devices and ports on network, it receives an
         ip address it then trie to fetch old devices from database if found compares it to new device
         and using set theory gets the list of newly discovered devices for which ports are scanned else
         it searches for devices on network considers it new devices
 
     """
-    cursor = dbConnection()
+
+    db = dbConnection()
+    cursor = db.cursor()
     try:
         st = """SELECT * FROM devices"""
         cursor.execute(st)
         oldDevices = [item[0] for item in cursor.fetchall()]
+        db.commit()
+        db.close()
     except Exception as error:
         return error
     else:
@@ -41,32 +63,15 @@ def worker(network):
             newDevices = [(x,) for x in newDevices]
             st = """INSERT INTO devices VALUES (%s)"""
             cursor.executemany(st, newDevices)
+            db.commit()
+            db.close()
             script_executor(usage="Find Ports")
             ports = parser("Find Ports")
             print(json.dumps(ports))
 
 
-app = Flask(__name__)
-
-
-@app.route('/cronjob', methods=['GET'])
-def cron_job():
-    """ This function calls a worker function every 5 min and checks for new devices and ports
-
-        :return: (string) acknowledgement for successful execution
-
-    """
-    ip_address = request.get_json('ip')
-    ip_address = ip_address["ip"]
-    script_executor(ip=ip_address, usage="Discover Devices")
-    sched = BackgroundScheduler(daemon=True)
-    sched.add_job(worker, 'interval', args=[ip_address], minutes=1)
-    sched.start()
-    return "cron job running"
-
-
 @app.route('/OPS', methods=['GET'])
-def open_port_scanner(**kwargs):
+def open_port_scanner():
     """ Discover ip address and open ports of active devices on a network
 
     :return ports: (dict) object containing ip address and open ports on the network
@@ -78,10 +83,13 @@ def open_port_scanner(**kwargs):
     script_executor(ip=ip_address, usage="Discover Devices")
     devices = parser("Discover Devices")
 
-    cursor = dbConnection()
+    db = dbConnection()
+    cursor = db.cursor()
     devices = [(x,) for x in devices]
     st = """INSERT INTO devices VALUES (%s)"""
     cursor.executemany(st, devices)
+    db.commit()
+    db.close()
 
     # Iterating over active devices and finding open ports
     script_executor(usage="Find Ports")
@@ -92,9 +100,8 @@ def open_port_scanner(**kwargs):
 def dbConnection():
     """ Configration for mysql database """
     try:
-        db = mysql.connector.connect(host="localhost", user="root", port="3306", passwd="root", database="OPS")
-        cursor = db.cursor()
-        return cursor
+        db = mysql.connector.connect(host="db", user="root", port="3306", passwd="root", database="OPS")
+        return db
     except Exception as error:
         return error
 
