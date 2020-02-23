@@ -6,6 +6,8 @@
     Open port scanner is an application designed to probe a server or host for open ports.
 
 """
+from typing import List, Any, Tuple
+
 import xmltodict, shlex, json
 from subprocess import run
 from flask import Flask, request
@@ -15,24 +17,24 @@ from apscheduler.schedulers.background import BackgroundScheduler
 app = Flask(__name__)
 
 
-@app.route('/cronjob', methods=['GET'])
+@app.route('/cron-job', methods=['GET'])
 def cron_job():
     """ This function calls a worker function every 5 min and checks for new devices and ports
 
         :return: (string) acknowledgement for successful execution
 
     """
+    discoverDevices()
     ip_address = request.get_json('ip')
-    ip_address = ip_address["ip"]
-    # script_executor(ip=ip_address, usage="Discover Devices")
+    ip_address = ip_address['ip']
     sched = BackgroundScheduler(daemon=True)
     sched.add_job(worker, 'interval', args=[ip_address], minutes=5)
     sched.start()
-    return "cron job running"
+    return "cron job running, std output displaying the ports and devices"
 
 
 def worker(network):
-    """ This function executes every 10 min to check for new devices and ports on network, it receives an
+    """ This function executes every 5 min to check for new devices and ports on network, it receives an
         ip address it then trie to fetch old devices from database if found compares it to new device
         and using set theory gets the list of newly discovered devices for which ports are scanned else
         it searches for devices on network considers it new devices
@@ -44,25 +46,30 @@ def worker(network):
     try:
         st = """SELECT * FROM devices"""
         cursor.execute(st)
-        oldDevices = [item[0] for item in cursor.fetchall()]
+        old_devices = [item for item in cursor.fetchall()]
         db.commit()
         db.close()
     except Exception as error:
         return error
     else:
-        if oldDevices:
+        if old_devices:
             script_executor(ip=network, usage="Discover Devices")
-            newDevices = parser("Discover Devices")
-            newDevices = list(({*newDevices} - {*oldDevices}))
+            new_devices = parser("Discover Devices")
+            new_devices = list(({*new_devices} - {*old_devices}))
+            file = open("iplist.txt", "w")
+            for element in new_devices:
+                file.write(element)
+                file.write('\n')
+            file.close()
             script_executor(usage="Find Ports")
             ports = parser("Find Ports")
             print(json.dumps(ports))
         else:
             script_executor(ip=network, usage="Discover Devices")
-            newDevices = parser("Discover Devices")
-            newDevices = [(x,) for x in newDevices]
+            new_devices = parser("Discover Devices")
+            new_devices = [(x,) for x in new_devices]
             st = """INSERT INTO devices VALUES (%s)"""
-            cursor.executemany(st, newDevices)
+            cursor.executemany(st, new_devices)
             db.commit()
             db.close()
             script_executor(usage="Find Ports")
@@ -74,10 +81,18 @@ def worker(network):
 def open_port_scanner():
     """ Discover ip address and open ports of active devices on a network
 
-    :return ports: (dict) object containing ip address and open ports on the network
+    :return ports: (dict) json containing ip address and open ports on the network
 
     """
+    discoverDevices()
+    # Iterating over active devices and finding open ports
+    script_executor(usage="Find Ports")
+    ports = parser("Find Ports")
+    return json.dumps(ports)
 
+
+def discoverDevices():
+    """Discover new devices """
     ip_address = request.get_json('ip')
     ip_address = ip_address["ip"]
     script_executor(ip=ip_address, usage="Discover Devices")
@@ -91,14 +106,9 @@ def open_port_scanner():
     db.commit()
     db.close()
 
-    # Iterating over active devices and finding open ports
-    script_executor(usage="Find Ports")
-    ports = parser("Find Ports")
-    return json.dumps(ports)
-
 
 def dbConnection():
-    """ Configration for mysql database """
+    """ Configuration for mysql database """
     try:
         db = mysql.connector.connect(host="db", user="root", port="3306", passwd="root", database="OPS")
         return db
