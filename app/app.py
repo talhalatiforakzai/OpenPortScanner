@@ -6,27 +6,53 @@
     Open port scanner is an application designed to probe a server or host for open ports.
 
 """
-from typing import List, Any, Tuple
-
-import xmltodict, shlex, json
-from subprocess import run
-from flask import Flask, request
+import xmltodict, json, subprocess, time, os
+from flask import Flask, request, send_file
 import mysql.connector
 from apscheduler.schedulers.background import BackgroundScheduler
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
 
-@app.route('/cron-job', methods=['GET'])
+@app.route('/OPS', methods=['GET', 'POST'])
+def open_port_scanner():
+    """ Discover ip address and open ports of active devices on a network
+
+    :return ports: (dict) json containing ip address and open ports on the network
+
+    """
+
+    if request.method == 'GET':
+        return download_script()
+    elif request.method == 'POST':
+        cronJob = request.form['cron_job']
+        if cronJob == "True":
+            print("Cron job")
+            return cron_job()
+        elif cron_job() == "False":
+            print("not a cron job")
+            post_file()
+            discoverDevices()
+            # Iterating over active devices and finding open ports
+            script_executor(usage="Find Ports")
+            ports = parser("Find Ports")
+            return json.dumps(ports)
+
+
 def cron_job():
     """ This function calls a worker function every 5 min and checks for new devices and ports
 
         :return: (string) acknowledgement for successful execution
 
     """
+    post_file()
     discoverDevices()
-    ip_address = request.get_json('ip')
-    ip_address = ip_address['ip']
+    # retrieve ip to be used for cronJob
+    with open("app/script/discover_device.sh", "r") as filehandle:
+        line = filehandle.readlines()[-1]
+    ip_address = line.split(' ')[-1]
+
     sched = BackgroundScheduler(daemon=True)
     sched.add_job(worker, 'interval', args=[ip_address], minutes=5)
     sched.start()
@@ -40,7 +66,6 @@ def worker(network):
         it searches for devices on network considers it new devices
 
     """
-
     db = dbConnection()
     cursor = db.cursor()
     try:
@@ -53,10 +78,11 @@ def worker(network):
         return error
     else:
         if old_devices:
-            script_executor(ip=network, usage="Discover Devices")
+            script_formulator(network)
+            script_executor(usage="Discover Devices")
             new_devices = parser("Discover Devices")
             new_devices = list(({*new_devices} - {*old_devices}))
-            file = open("iplist.txt", "w")
+            file = open("app/script/iplist.txt", "w")
             for element in new_devices:
                 file.write(element)
                 file.write('\n')
@@ -65,7 +91,9 @@ def worker(network):
             ports = parser("Find Ports")
             print(json.dumps(ports))
         else:
-            script_executor(ip=network, usage="Discover Devices")
+            script_formulator(network)
+            time.sleep(5)
+            script_executor(usage="Discover Devices")
             new_devices = parser("Discover Devices")
             new_devices = [(x,) for x in new_devices]
             st = """INSERT INTO devices VALUES (%s)"""
@@ -77,25 +105,38 @@ def worker(network):
             print(json.dumps(ports))
 
 
-@app.route('/OPS', methods=['GET'])
-def open_port_scanner():
-    """ Discover ip address and open ports of active devices on a network
+def download_script():
+    """ This function takes ip from user and passes it to script_formulator() which form a bash script
+        that user can download
 
-    :return ports: (dict) json containing ip address and open ports on the network
+            :return: (file) bash script is returned
 
     """
-    discoverDevices()
-    # Iterating over active devices and finding open ports
-    script_executor(usage="Find Ports")
-    ports = parser("Find Ports")
-    return json.dumps(ports)
+    ip_address = request.get_json('ip')
+    ip_address = ip_address["ip"]
+    script_formulator(ip_address)
+    # Since flask only supports static file, before sending we have to wait until the file is closed
+    time.sleep(10)
+    return send_file("script/discover_device.sh", as_attachment=True)
+
+
+def script_formulator(ip_address):
+    """ This function takes ip and forms a bash script and saves it to script directory for later use """
+    s = ["#!/usr/bin/env bash", "nmap -sn --open -oX device.xml " + ip_address]
+    with open('app/script/discover_device.sh', 'w') as filehandle:
+        for itm in s:
+            filehandle.write('%s\n' % itm)
+
+
+def post_file():
+    """ This takes bash script uploaded by user and saves it to script directory to be executed """
+    f = request.files['file']
+    f.save(os.path.join("app/script", secure_filename(f.filename)))
 
 
 def discoverDevices():
     """Discover new devices """
-    ip_address = request.get_json('ip')
-    ip_address = ip_address["ip"]
-    script_executor(ip=ip_address, usage="Discover Devices")
+    script_executor(usage="Discover Devices")
     devices = parser("Discover Devices")
 
     db = dbConnection()
@@ -127,7 +168,7 @@ def parser(usage):
     """
 
     if usage == "Discover Devices":
-        with open('device.xml') as raw_xml:
+        with open('app/script/device.xml') as raw_xml:
             nmap_scan = xmltodict.parse(raw_xml.read())
         devices = []
         total_host = len(nmap_scan["nmaprun"]["host"])
@@ -143,34 +184,28 @@ def parser(usage):
             devices.append(nmap_scan["nmaprun"]["host"][total_host - 1]["address"]["@addr"])
 
         # Active devices ip address saved in a txt file later to be used to find open ports and save ip address in DB
-        file = open("iplist.txt", "w")
+        file = open("app/script/iplist.txt", "w")
         for element in devices:
             file.write(element)
             file.write('\n')
         file.close()
         return devices
     elif usage == "Find Ports":
-        with open('port.xml') as raw_xml:
+        with open('app/script/port.xml') as raw_xml:
             nmap_scan = xmltodict.parse(raw_xml.read())
             ports = nmap_scan["nmaprun"]["host"]
             return ports
 
 
 def script_executor(**kwargs):
-    """ Executes the NMAP commands in subprocess and use shlex to parses the string into shell-like syntax that is
-        required by popenargs.
-
-           :param usage: (string) object that tells the function to either Discover new device or find open ports
-           :return ip: (string) ip address of the network
-           :return none:
-
-       """
+    """ Executes the bash scripts, gives execute permission to the bash scripts."""
     if kwargs['usage'] == "Discover Devices":
-        cmd = "nmap -sn --open -oX device.xml " + kwargs['ip']
+        # Set executable permission
+        subprocess.call(["chmod", "-R", "775", "app/script"])
+        subprocess.call(['./discover_device.sh'], cwd="app/script")
     elif kwargs['usage'] == "Find Ports":
-        cmd = "nmap -iL iplist.txt -sUV -sT -T4 -F --version-intensity 0 --open -oX port.xml"
-    args = shlex.split(cmd)
-    run(args)
+        subprocess.call(["chmod", "-R", "775", "app/script"])
+        subprocess.call(['./open_ports.sh'], cwd="app/script")
 
 
 if __name__ == '__main__':
