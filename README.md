@@ -8,6 +8,28 @@ sudo docker-compose up
 ```
 #### http://localhost:5000/OPS 
 Discover ip address and open ports of active devices on a network and returns a json array.
+
+CronJob set to True
+![alt text](https://i.ibb.co/TMqkNZ2/2.png)
+```http
+POST /OPS HTTP/1.1
+Host: localhost:5000
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+----WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="discover_device.sh"
+Content-Type: application/x-sh
+
+(data)
+----WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="cron_job"
+
+True
+----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+```
+Download bash script
+![alt text](https://i.ibb.co/C5QQ4HZ/ds.png)
 ```http
 GET /OPS HTTP/1.1
 Host: localhost:5000
@@ -18,17 +40,6 @@ Content-Type: application/json
 }
 ```
 
-#### http://localhost:5000/cron-job 
-Calls a worker every 5 minutes to iscover ip address and open ports of active devices on a network and display it on std output.
-```http
-GET /cron-job HTTP/1.1
-Host: localhost:5000
-Content-Type: application/json
-
-{
-	"ip" : "192.168.100.1/24"
-}
-```
 ## Functions
 <details>
   <summary>cron_job()</summary>
