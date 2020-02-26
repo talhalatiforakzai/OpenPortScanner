@@ -8,6 +8,8 @@ RUN apt-get update -y && \
 WORKDIR /app
 
 COPY requirements.txt /app
+COPY open_ports.sh /app
+
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
