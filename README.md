@@ -10,6 +10,7 @@ sudo docker-compose up
 Discover ip address and open ports of active devices on a network and returns a json array.
 
 Download bash script
+
 ![alt text](https://i.ibb.co/C5QQ4HZ/ds.png)
 ```http
 GET /OPS HTTP/1.1
@@ -22,6 +23,7 @@ Content-Type: application/json
 ```
 
 CronJob set to True
+
 ![alt text](https://i.ibb.co/TMqkNZ2/2.png)
 ```http
 POST /OPS HTTP/1.1
