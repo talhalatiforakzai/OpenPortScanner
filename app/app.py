@@ -28,7 +28,6 @@ def open_port_scanner():
     elif request.method == 'POST':
         cronJob = request.form['cron_job']
         if cronJob == "True":
-            print("Cron job")
             return cron_job()
         elif cronJob == "False":
             post_file()
@@ -46,7 +45,10 @@ def cron_job():
 
     """
     post_file()
+    print("************************ DISCOVERED DEVICES INFO ************************", flush=True)
     discoverDevices()
+    print("************************ DISCOVERED PORTS INFO ************************", flush=True)
+    script_executor(usage="Find Ports")
     # retrieve ip to be used for cronJob
     with open("discover_device.sh", "r") as filehandle:
         line = filehandle.readlines()[-1]
@@ -65,43 +67,50 @@ def worker(network):
         it searches for devices on network considers it new devices
 
     """
+    print("************************ WORKER STARTED ************************", flush=True)
     db = dbConnection()
     cursor = db.cursor()
-    try:
-        st = """SELECT * FROM devices"""
-        cursor.execute(st)
-        old_devices = [item for item in cursor.fetchall()]
-        db.commit()
-        db.close()
-    except Exception as error:
-        return error
-    else:
-        if old_devices:
-            script_formulator(network)
-            script_executor(usage="Discover Devices")
-            new_devices = parser("Discover Devices")
-            new_devices = list(({*new_devices} - {*old_devices}))
+    st = """SELECT * FROM devices"""
+    cursor.execute(st)
+    old_devices = [item for item in cursor.fetchall()]
+    old_devices = [x[0] for x in old_devices]
+    db.commit()
+    db.close()
+    if old_devices:
+        script_formulator(network)
+        print("************************ DISCOVERED DEVICES INFO ************************", flush=True)
+        script_executor(usage="Discover Devices")
+        devices = parser("Discover Devices")
+        new_devices = list(({*devices} - {*old_devices}))
+        for it in new_devices:
+            print(it)
+            print("\n")
+        if new_devices:
+            print("************************ NEW DEVICES FOUND ************************", flush=True)
             file = open("iplist.txt", "w")
             for element in new_devices:
                 file.write(element)
                 file.write('\n')
             file.close()
+            print("************************ DISCOVERED PORTS INFO ************************", flush=True)
             script_executor(usage="Find Ports")
-            ports = parser("Find Ports")
-            print(json.dumps(ports))
         else:
-            script_formulator(network)
-            time.sleep(5)
-            script_executor(usage="Discover Devices")
-            new_devices = parser("Discover Devices")
-            new_devices = [(x,) for x in new_devices]
-            st = """INSERT INTO devices VALUES (%s)"""
-            cursor.executemany(st, new_devices)
-            db.commit()
-            db.close()
-            script_executor(usage="Find Ports")
-            ports = parser("Find Ports")
-            print(json.dumps(ports))
+            print("************************ NEW DEVICES NOT FOUND ************************", flush=True)
+    else:
+        print("************************ No devices in database Running Scan ************************", flush=True)
+        script_formulator(network)
+        time.sleep(5)
+        print("************************ DISCOVERED DEVICES INFO ************************", flush=True)
+        script_executor(usage="Discover Devices")
+        new_devices = parser("Discover Devices")
+        new_devices = [(x,) for x in new_devices]
+        st = """INSERT IGNORE INTO devices VALUES (%s)"""
+        cursor.executemany(st, new_devices)
+        db.commit()
+        db.close()
+        print("************************ DISCOVERED PORTS INFO ************************", flush=True)
+        script_executor(usage="Find Ports")
+
 
 
 def download_script():
@@ -120,7 +129,7 @@ def download_script():
 
 
 def script_formulator(ip_address):
-    """ This function takes ip and forms a bash script and saves it to script directory for later use """
+    """ This function takes ip and forms a bash script and saves it to root directory for later use """
     s = ["#!/usr/bin/env bash", "nmap -sn --open -oX device.xml " + ip_address]
     with open('discover_device.sh', 'w') as filehandle:
         for itm in s:
@@ -141,7 +150,7 @@ def discoverDevices():
     db = dbConnection()
     cursor = db.cursor()
     devices = [(x,) for x in devices]
-    st = """INSERT INTO devices VALUES (%s)"""
+    st = """INSERT IGNORE INTO devices VALUES (%s)"""
     cursor.executemany(st, devices)
     db.commit()
     db.close()
@@ -197,7 +206,9 @@ def parser(usage):
 
 
 def script_executor(**kwargs):
-    """ Executes the bash scripts, gives execute permission to the bash scripts."""
+    """ Executes the bash scripts, gives execute permission to the bash scripts.
+    :param kwargs:
+    """
     if kwargs['usage'] == "Discover Devices":
         # Set executable permission
         subprocess.call(["chmod", "775", "discover_device.sh"])
