@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///usr/bin/../share/nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.60 scan initiated Tue Mar 17 00:32:42 2020 as: nmap -iL iplist.txt -sUV -sT -T4 -F -oX port.xml &#xe2;&#x80;&#x93;version-intensity 0 &#xe2;&#x80;&#x93;open -->
+<nmaprun scanner="nmap" args="nmap -iL iplist.txt -sUV -sT -T4 -F -oX port.xml &#xe2;&#x80;&#x93;version-intensity 0 &#xe2;&#x80;&#x93;open" start="1584387162" startstr="Tue Mar 17 00:32:42 2020" version="7.60" xmloutputversion="1.04">
+<scaninfo type="connect" protocol="tcp" numservices="100" services="7,9,13,21-23,25-26,37,53,79-81,88,106,110-111,113,119,135,139,143-144,179,199,389,427,443-445,465,513-515,543-544,548,554,587,631,646,873,990,993,995,1025-1029,1110,1433,1720,1723,1755,1900,2000-2001,2049,2121,2717,3000,3128,3306,3389,3986,4899,5000,5009,5051,5060,5101,5190,5357,5432,5631,5666,5800,5900,6000-6001,6646,7070,8000,8008-8009,8080-8081,8443,8888,9100,9999-10000,32768,49152-49157"/>
+<scaninfo type="udp" protocol="udp" numservices="100" services="7,9,17,19,49,53,67-69,80,88,111,120,123,135-139,158,161-162,177,427,443,445,497,500,514-515,518,520,593,623,626,631,996-999,1022-1023,1025-1030,1433-1434,1645-1646,1701,1718-1719,1812-1813,1900,2000,2048-2049,2222-2223,3283,3456,3703,4444,4500,5000,5060,5353,5632,9200,10000,17185,20031,30718,31337,32768-32769,32771,32815,33281,49152-49154,49156,49181-49182,49185-49186,49188,49190-49194,49200-49201,65024"/>
+<verbose level="0"/>
+<debugging level="0"/>
+<host starttime="1584387162" endtime="1584387654"><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="192.168.100.1" addrtype="ipv4"/>
+<address addr="34:0A:98:3B:52:B1" addrtype="mac"/>
+<hostnames>
+<hostname name="_gateway" type="PTR"/>
+</hostnames>
+<ports><extraports state="closed" count="102">
+<extrareasons reason="conn-refused" count="95"/>
+<extrareasons reason="port-unreaches" count="7"/>
+</extraports>
+<extraports state="open|filtered" count="92">
+<extrareasons reason="no-responses" count="92"/>
+</extraports>
+<port protocol="tcp" portid="21"><state state="filtered" reason="no-response" reason_ttl="0"/><service name="ftp" method="table" conf="3"/></port>
+<port protocol="tcp" portid="22"><state state="filtered" reason="no-response" reason_ttl="0"/><service name="ssh" method="table" conf="3"/></port>
+<port protocol="tcp" portid="23"><state state="filtered" reason="no-response" reason_ttl="0"/><service name="telnet" method="table" conf="3"/></port>
+<port protocol="tcp" portid="53"><state state="open" reason="syn-ack" reason_ttl="0"/><service name="domain" product="ISC BIND" version="BIND" method="probed" conf="10"><cpe>cpe:/a:isc:bind:bind</cpe></service></port>
+<port protocol="tcp" portid="80"><state state="open" reason="syn-ack" reason_ttl="0"/><service name="http" servicefp="SF-Port80-TCP:V=7.60%T=SSL%I=7%D=3/17%Time=5E6FD4DD%P=x86_64-pc-linux-gnu%r(GenericLines,67,&quot;HTTP/1\.1\x20404\x20Not\x20Found\r\nConnection:\x20Keep-Alive\r\n\r\n2f\r\nThe\x20requested\x20URL\x20was\x20not\x20found\x20on\x20this\x20server\.\r\n&quot;)%r(GetRequest,39,&quot;HTTP/1\.1\x20400\x20Bad\x20Request\r\nConnection:\x20Keep-Alive\r\n\r\n0\r\n\r\n&quot;)%r(HTTPOptions,F8,&quot;HTTP/1\.1\x20404\x20Not\x20Found\r\nContent-Type:text/html\r\nPragma:no-cache\r\nCache-control:no-cache,\x20no-store,\x20max-age=0\r\nTransfer-Encoding:chunked\r\nX-Frame-Options:SAMEORIGIN\r\nConnection:Keep-Alive\r\n\r\n2f\r\nThe\x20requested\x20URL\x20was\x20not\x20found\x20on\x20this\x20server\.\r\n0\r\n\r\n&quot;)%r(RTSPRequest,F8,&quot;HTTP/1\.1\x20404\x20Not\x20Found\r\nContent-Type:text/html\r\nPragma:no-cache\r\nCache-control:no-cache,\x20no-store,\x20max-age=0\r\nTransfer-Encoding:chunked\r\nX-Frame-Options:SAMEORIGIN\r\nConnection:Keep-Alive\r\n\r\n2f\r\nThe\x20requested\x20URL\x20was\x20not\x20found\x20on\x20this\x20server\.\r\n0\r\n\r\n&quot;)%r(FourOhFourRequest,39,&quot;HTTP/1\.1\x20400\x20Bad\x20Request\r\nConnection:\x20Keep-Alive\r\n\r\n0\r\n\r\n&quot;)%r(SIPOptions,F8,&quot;HTTP/1\.1\x20404\x20Not\x20Found\r\nContent-Type:text/html\r\nPragma:no-cache\r\nCache-control:no-cache,\x20no-store,\x20max-age=0\r\nTransfer-Encoding:chunked\r\nX-Frame-Options:SAMEORIGIN\r\nConnection:Keep-Alive\r\n\r\n2f\r\nThe\x20requested\x20URL\x20was\x20not\x20found\x20on\x20this\x20server\.\r\n0\r\n\r\n&quot;);" tunnel="ssl" method="probed" conf="10"/></port>
+<port protocol="udp" portid="53"><state state="open" reason="udp-response" reason_ttl="64"/><service name="domain" product="ISC BIND" version="BIND" method="probed" conf="10"><cpe>cpe:/a:isc:bind:bind</cpe></service></port>
+</ports>
+<times srtt="6584" rttvar="1641" to="100000"/>
+</host>
+<host starttime="1584387162" endtime="1584387652"><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="192.168.100.5" addrtype="ipv4"/>
+<address addr="80:7A:BF:02:01:43" addrtype="mac" vendor="HTC"/>
+<hostnames>
+</hostnames>
+<ports><extraports state="closed" count="193">
+<extrareasons reason="conn-refused" count="100"/>
+<extrareasons reason="port-unreaches" count="93"/>
+</extraports>
+<port protocol="udp" portid="17"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="qotd" method="table" conf="3"/></port>
+<port protocol="udp" portid="518"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="ntalk" method="table" conf="3"/></port>
+<port protocol="udp" portid="1028"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="ms-lsa" method="table" conf="3"/></port>
+<port protocol="udp" portid="5353"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="zeroconf" method="table" conf="3"/></port>
+<port protocol="udp" portid="32815"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="unknown" method="table" conf="3"/></port>
+<port protocol="udp" portid="49156"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="unknown" method="table" conf="3"/></port>
+<port protocol="udp" portid="49181"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="unknown" method="table" conf="3"/></port>
+</ports>
+<times srtt="14081" rttvar="620" to="100000"/>
+</host>
+<host starttime="1584387162" endtime="1584387650"><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="192.168.100.8" addrtype="ipv4"/>
+<address addr="FC:FC:48:5A:0B:C1" addrtype="mac" vendor="Apple"/>
+<hostnames>
+</hostnames>
+<ports><extraports state="closed" count="149">
+<extrareasons reason="port-unreaches" count="99"/>
+<extrareasons reason="conn-refused" count="50"/>
+</extraports>
+<extraports state="filtered" count="50">
+<extrareasons reason="no-responses" count="50"/>
+</extraports>
+<port protocol="udp" portid="5353"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="zeroconf" method="table" conf="3"/></port>
+</ports>
+<times srtt="11929" rttvar="2376" to="100000"/>
+</host>
+<host starttime="1584387162" endtime="1584387654"><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="192.168.100.22" addrtype="ipv4"/>
+<address addr="50:3C:C4:F9:34:97" addrtype="mac" vendor="Lenovo Mobile Communication Technology"/>
+<hostnames>
+</hostnames>
+<ports><extraports state="closed" count="177">
+<extrareasons reason="conn-refused" count="100"/>
+<extrareasons reason="port-unreaches" count="77"/>
+</extraports>
+<port protocol="udp" portid="68"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="dhcpc" method="table" conf="3"/></port>
+<port protocol="udp" portid="69"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="tftp" method="table" conf="3"/></port>
+<port protocol="udp" portid="120"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="cfdptkt" method="table" conf="3"/></port>
+<port protocol="udp" portid="136"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="profile" method="table" conf="3"/></port>
+<port protocol="udp" portid="137"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="netbios-ns" method="table" conf="3"/></port>
+<port protocol="udp" portid="177"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="xdmcp" method="table" conf="3"/></port>
+<port protocol="udp" portid="515"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="printer" method="table" conf="3"/></port>
+<port protocol="udp" portid="518"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="ntalk" method="table" conf="3"/></port>
+<port protocol="udp" portid="593"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="http-rpc-epmap" method="table" conf="3"/></port>
+<port protocol="udp" portid="631"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="ipp" method="table" conf="3"/></port>
+<port protocol="udp" portid="997"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="maitrd" method="table" conf="3"/></port>
+<port protocol="udp" portid="1026"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="win-rpc" method="table" conf="3"/></port>
+<port protocol="udp" portid="1812"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="radius" method="table" conf="3"/></port>
+<port protocol="udp" portid="3703"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="adobeserver-3" method="table" conf="3"/></port>
+<port protocol="udp" portid="9200"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="wap-wsp" method="table" conf="3"/></port>
+<port protocol="udp" portid="17185"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="wdbrpc" method="table" conf="3"/></port>
+<port protocol="udp" portid="32768"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="omad" method="table" conf="3"/></port>
+<port protocol="udp" portid="32815"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="unknown" method="table" conf="3"/></port>
+<port protocol="udp" portid="33281"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="unknown" method="table" conf="3"/></port>
+<port protocol="udp" portid="49152"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="unknown" method="table" conf="3"/></port>
+<port protocol="udp" portid="49153"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="unknown" method="table" conf="3"/></port>
+<port protocol="udp" portid="49181"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="unknown" method="table" conf="3"/></port>
+<port protocol="udp" portid="49200"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="unknown" method="table" conf="3"/></port>
+</ports>
+<times srtt="10509" rttvar="913" to="100000"/>
+</host>
+<host starttime="1584387654" endtime="1584387755"><status state="up" reason="localhost-response" reason_ttl="0"/>
+<address addr="192.168.100.3" addrtype="ipv4"/>
+<hostnames>
+<hostname name="talha-HP-Pavilion-Sleekbook-15-PC" type="PTR"/>
+</hostnames>
+<ports><extraports state="closed" count="196">
+<extrareasons reason="conn-refused" count="99"/>
+<extrareasons reason="port-unreaches" count="97"/>
+</extraports>
+<port protocol="tcp" portid="5000"><state state="open" reason="syn-ack" reason_ttl="0"/><service name="http" product="Werkzeug httpd" version="1.0.0" extrainfo="Python 3.6.10" method="probed" conf="10"><cpe>cpe:/a:python:python:3.6.10</cpe></service></port>
+<port protocol="udp" portid="68"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="dhcpc" method="table" conf="3"/></port>
+<port protocol="udp" portid="631"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="ipp" method="table" conf="3"/></port>
+<port protocol="udp" portid="5353"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="zeroconf" method="table" conf="3"/></port>
+</ports>
+<times srtt="606" rttvar="520" to="100000"/>
+</host>
+<runstats><finished time="1584387755" timestr="Tue Mar 17 00:42:35 2020" elapsed="593.13" summary="Nmap done at Tue Mar 17 00:42:35 2020; 6 IP addresses (5 hosts up) scanned in 593.13 seconds" exit="success"/><hosts up="5" down="1" total="6"/>
+</runstats>
+</nmaprun>

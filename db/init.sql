@@ -1,7 +1,0 @@
-CREATE DATABASE IF NOT EXISTS OPS;
-use OPS;
-
-CREATE TABLE devices (
-  ip VARCHAR(15)
-);
-

@@ -1,0 +1,194 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="nmaprun">
+    <xs:annotation>
+      <xs:documentation><![CDATA[Nmap 7.60 scan initiated Thu Mar 12 10:15:10 2020 as: nmap -iL iplist.txt -sUV -sT -T4 -F -oX port.xml &#xe2;&#x80;&#x93;version-intensity 0 &#xe2;&#x80;&#x93;open]]></xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="scaninfo" maxOccurs="unbounded" minOccurs="0">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:string">
+                <xs:attribute type="xs:string" name="type" use="optional"/>
+                <xs:attribute type="xs:string" name="protocol" use="optional"/>
+                <xs:attribute type="xs:byte" name="numservices" use="optional"/>
+                <xs:attribute type="xs:string" name="services" use="optional"/>
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="verbose">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:string">
+                <xs:attribute type="xs:byte" name="level"/>
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="debugging">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:string">
+                <xs:attribute type="xs:byte" name="level"/>
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="host" maxOccurs="unbounded" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="status">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute type="xs:string" name="state" use="optional"/>
+                      <xs:attribute type="xs:string" name="reason" use="optional"/>
+                      <xs:attribute type="xs:byte" name="reason_ttl" use="optional"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="address" maxOccurs="unbounded" minOccurs="0">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute type="xs:string" name="addr" use="optional"/>
+                      <xs:attribute type="xs:string" name="addrtype" use="optional"/>
+                      <xs:attribute type="xs:string" name="vendor" use="optional"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="hostnames">
+                <xs:complexType mixed="true">
+                  <xs:sequence>
+                    <xs:element name="hostname" minOccurs="0">
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string">
+                            <xs:attribute type="xs:string" name="name" use="optional"/>
+                            <xs:attribute type="xs:string" name="type" use="optional"/>
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="ports">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="extraports" maxOccurs="unbounded" minOccurs="0">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="extrareasons" maxOccurs="unbounded" minOccurs="0">
+                            <xs:complexType>
+                              <xs:simpleContent>
+                                <xs:extension base="xs:string">
+                                  <xs:attribute type="xs:string" name="reason" use="optional"/>
+                                  <xs:attribute type="xs:byte" name="count" use="optional"/>
+                                </xs:extension>
+                              </xs:simpleContent>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                        <xs:attribute type="xs:string" name="state" use="optional"/>
+                        <xs:attribute type="xs:int" name="count" use="optional"/>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="port" maxOccurs="unbounded" minOccurs="0">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="state">
+                            <xs:complexType>
+                              <xs:simpleContent>
+                                <xs:extension base="xs:string">
+                                  <xs:attribute type="xs:string" name="state" use="optional"/>
+                                  <xs:attribute type="xs:string" name="reason" use="optional"/>
+                                  <xs:attribute type="xs:byte" name="reason_ttl" use="optional"/>
+                                </xs:extension>
+                              </xs:simpleContent>
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element name="service">
+                            <xs:complexType mixed="true">
+                              <xs:sequence>
+                                <xs:element type="xs:string" name="cpe" maxOccurs="unbounded" minOccurs="0"/>
+                              </xs:sequence>
+                              <xs:attribute type="xs:string" name="name" use="optional"/>
+                              <xs:attribute type="xs:string" name="method" use="optional"/>
+                              <xs:attribute type="xs:byte" name="conf" use="optional"/>
+                              <xs:attribute type="xs:string" name="product" use="optional"/>
+                              <xs:attribute type="xs:string" name="version" use="optional"/>
+                              <xs:attribute type="xs:string" name="extrainfo" use="optional"/>
+                              <xs:attribute type="xs:string" name="ostype" use="optional"/>
+                              <xs:attribute type="xs:string" name="servicefp" use="optional"/>
+                              <xs:attribute type="xs:string" name="tunnel" use="optional"/>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                        <xs:attribute type="xs:string" name="protocol" use="optional"/>
+                        <xs:attribute type="xs:int" name="portid" use="optional"/>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="times">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute type="xs:int" name="srtt" use="optional"/>
+                      <xs:attribute type="xs:int" name="rttvar" use="optional"/>
+                      <xs:attribute type="xs:int" name="to" use="optional"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+            <xs:attribute type="xs:int" name="starttime" use="optional"/>
+            <xs:attribute type="xs:int" name="endtime" use="optional"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="runstats">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="finished">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute type="xs:int" name="time"/>
+                      <xs:attribute type="xs:string" name="timestr"/>
+                      <xs:attribute type="xs:float" name="elapsed"/>
+                      <xs:attribute type="xs:string" name="summary"/>
+                      <xs:attribute type="xs:string" name="exit"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="hosts">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute type="xs:byte" name="up"/>
+                      <xs:attribute type="xs:byte" name="down"/>
+                      <xs:attribute type="xs:byte" name="total"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute type="xs:string" name="scanner"/>
+      <xs:attribute type="xs:string" name="args"/>
+      <xs:attribute type="xs:int" name="start"/>
+      <xs:attribute type="xs:string" name="startstr"/>
+      <xs:attribute type="xs:float" name="version"/>
+      <xs:attribute type="xs:float" name="xmloutputversion"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
+
