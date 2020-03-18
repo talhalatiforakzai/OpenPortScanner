@@ -1,28 +1,30 @@
 FROM python:3.6
-EXPOSE 5000
+
 RUN apt-get update -y && \
       apt-get install -y python3-pip python3-dev build-essential
-#ADD . /OPS adds eerything in OPS
-WORKDIR /OPS
-# Each layer is cached, and when a file that previously got copied into the image changes,
-# it invalidates its cache and that of all the following layers. Therefore, we can copy a
-# file that barely ever changes first
+
+WORKDIR /OpenPortScanner
+
 COPY requirements.txt requirements.txt
 
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
+RUN pip install gunicorn
 
 COPY app app
 COPY migrations migrations
-COPY ops.py config.py boot.sh ./
+COPY bin bin
+COPY ops.py config.py ./
 
+ENV CELERY_BROKER_URL redis://redis:6379/0
+ENV CELERY_RESULT_BACKEND redis://redis:6379/0
+ENV C_FORCE_ROOT true
 ENV FLASK_APP ops.py
 ENV FLASK_ENV=development
 ENV FLASK_DEBUG=1
-ENV FLASK_RUN_PORT=5000
-RUN chmod a+x boot.sh
-ENTRYPOINT ["./boot.sh"]
-#CMD ["python","ops.py"]
-#CMD ["flask","db","int"]
-#CMD ["flask","db","migrate","-m","'done'"]
-#CMD ["flask","db","upgrade"]
+ENV FLASK_RUN_PORT=5001
+
+RUN chmod a+x /OpenPortScanner/bin/boot.sh
+RUN chmod a+x /OpenPortScanner/bin/worker.sh
+RUN chmod a+x /OpenPortScanner/bin/monitor.sh
+
