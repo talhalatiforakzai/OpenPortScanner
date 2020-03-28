@@ -64,7 +64,8 @@ def port_parser(nmap_scan):
 
 SCRIPT_COMMANDS = '''#!/usr/bin/env bash 
 sudo nmap -sn --open -oX device.xml {ip_address}
-curl -i -X POST -H "Content-Type: multipart/form-data" -F "file=@device.xml" http://127.0.0.1:5001/api/port-scanner nmap -n -sn {ip_address} -oG - | awk '/Up$/{{print $2}}' > iplist.txt
+curl -i -X POST -H "Content-Type: multipart/form-data" -F "file=@device.xml" http://127.0.0.1:5001/api/port-scanner 
+nmap -n -sn {ip_address} -oG - | awk '/Up$/{{print $2}}' > iplist.txt
 wait $!
 sudo nmap -iL iplist.txt -sUV -sT -T4 -F –version-intensity 0 –open -oX port.xml
 wait $!

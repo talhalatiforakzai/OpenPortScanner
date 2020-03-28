@@ -23,6 +23,8 @@ ENV FLASK_APP ops.py
 ENV FLASK_ENV=development
 ENV FLASK_DEBUG=1
 ENV FLASK_RUN_PORT=5001
+RUN mkdir /tmp/prom_data
+ENV prometheus_multiproc_dir /tmp/prom_data
 
 RUN chmod a+x /OpenPortScanner/bin/boot.sh
 RUN chmod a+x /OpenPortScanner/bin/worker.sh
