@@ -1,3 +1,4 @@
+import prometheus_client
 import xmltodict
 from app import db
 from flask import request, jsonify, Response
