@@ -11,6 +11,7 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - redis
+      - db
     links:
       - db
     ports:
@@ -18,6 +19,7 @@ services:
     entrypoint: /OpenPortScanner/bin/boot.sh
     volumes:
       - .:/OPS
+
   db:
     image: mysql:5.7
     command: mysqld --default-authentication-plugin=mysql_native_password
@@ -34,6 +36,7 @@ services:
     entrypoint: /OpenPortScanner/bin/worker.sh
     depends_on:
       - redis
+
   monitor:
     build: .
     ports:
@@ -41,27 +44,79 @@ services:
     entrypoint: /OpenPortScanner/bin/monitor.sh
     depends_on:
       - redis
+
   redis:
     image: redis
-  prometheus-OPS:
+
+  prometheus:
     image: prom/prometheus
-    container_name: prometheus-OPS
+    container_name: prometheus
     volumes:
-      - ./app/prometheus:/etc/prometheus:ro
+      - ./prometheus:/etc/prometheus
       - prometheus_data:/prometheus
     command:
-    - --config.file=/etc/prometheus/prometheus.yml
-    expose:
-      - 9090
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
     ports:
-      - 9090:9090
+      - "9090:9090"
+
+  alertmanager:
+    image: prom/alertmanager
+    container_name: alertmanager
+    volumes:
+      - ./alertmanager:/etc/alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/config.yml'
+      - '--storage.path=/alertmanager'
+    ports:
+      - "9093:9093"
+
+  nodeexporter:
+    image: prom/node-exporter
+    container_name: nodeexporter
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+    ports:
+      - "9100:9100"
+
+  cadvisor:
+    image: gcr.io/google-containers/cadvisor
+    container_name: cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+      - /cgroup:/cgroup:ro
+    ports:
+      - "8080:8080"
+
   grafana:
     image: grafana/grafana
-    depends_on:
-      - prometheus-OPS
-    ports:
-      - 3000:3000
+    container_name: grafana
     volumes:
       - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=foobar
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    ports:
+      - "3000:3000"
+
+  pushgateway:
+    image: prom/pushgateway
+    container_name: pushgateway
+    ports:
+      - "9091:9091"
